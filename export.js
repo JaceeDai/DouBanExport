@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name             豆瓣读书+电影+音乐+游戏+舞台剧导出工具
+// @name             豆瓣读书+电影+音乐+游戏+舞台剧导出工具-Mine
 // @namespace        https://ulyc.github.io/
 // @version          0.1.2
 // @description      将【读过/看过/听过/玩过】的 【读书/电影/音乐/游戏/舞台剧】条目分别导出为 csv 文件
@@ -233,6 +233,14 @@
                         item.release_date = res[1].replaceAll('-', '/');
                         item.country = res[2];
                     }
+                    /*
+                    let pathname = new URL(item.link).pathname;
+                    let paths = pathname.split('/');
+                    var lastPath = paths[paths.length - 1];
+                    if (lastPath === '') {
+                        lastPath = paths[paths.length - 2];
+                    }
+                    item.douban_id = lastPath;*/
                     break;
                 case MUSIC:
                 case BOOK:
@@ -297,6 +305,19 @@
         });
 
         const items = getCurPageItems(type);
+        // 不得行，不被允许
+        // items.forEach(i => {
+        //     fetch('https://api.wmdb.tv/movie/api?id=' + i.douban_id)
+        //         .then(response => response.json()) // 解析 JSON 数据
+        //         .then(data => {
+        //             console.log(data); // 输出获取到的 JSON 数据
+        //             i.country = data.data[0].country
+        //             i.genre = data.data[0].genre
+        //         })
+        //         .catch(error => {
+        //             console.error('Error:', error);
+        //         });
+        // });
         db.items.bulkAdd(items).then(function () {
             console.log('添加成功+', items.length);
 
@@ -402,15 +423,15 @@
                 // 如果存在自定义key值
                 if (columns.key.length) {
                     columns.key.map(function (m) {
-                        row += '"' + (typeof columns.formatter === 'function' ? columns.formatter(m, n[m]) || n[m] || '' : n[m] || '') + '",';
+                        row += '"' + (typeof columns.formatter === 'function' ? columns.formatter(m, n[m]) || n[m] || '' : n[m] || '') + '",'; // 这里默认总是为：", —— 所以
                     });
                 } else {
                     for (key in n) {
                         row += '"' + (typeof columns.formatter === 'function' ? columns.formatter(key, n[key]) || n[key] || '' : n[key] || '') + '",';
                     }
                 }
-                row.slice(0, row.length - 1); // 删除最后一个,
-                CSV += row + '\r\n'; // 添加换行符号
+                let slicedRow = row.slice(0, row.length - 1); // 删除最后一个, —— 有问题，还是有个单引号 —— 原因是row本身没变化的，slice只是处理
+                CSV += slicedRow + '\r\n'; // 添加换行符号
             });
             if (!CSV) return;
             this.SaveAs(fileName, CSV);
