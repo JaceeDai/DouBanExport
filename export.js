@@ -29,6 +29,10 @@
         return 'https://' + type + '.douban.com/people/' + people + '/collect?start=0&sort=time&mode=grid&rating=all&export=1';
     }
 
+    function getExportLinkForUndoe(type, people) {
+        return 'https://' + type + '.douban.com/people/' + people + '/wish?export=1';
+    }
+
     function getGameExportLink(people) { // type=game
         return 'https://www.douban.com/people/' + people + '/games?action=collect&start=0&export=1';
     }
@@ -45,12 +49,24 @@
         } else {
             typeElement = $('#db-' + type + '-mine h2:contains(过)  .pl');
         }
+        // var done;
+        // var node;
         switch (type) {
             case BOOK:
-                typeElement.after('&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出读过的书</a>');
+                // node = '&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出读过的书</a>';
+                // done = document.createElement(node);
+                // typeElement.after(done);
+                // typeElement.after('&nbsp;·&nbsp;<a href="' + getExportLinkForUndoe(type, people) + '">导出未读过的书</a>');
+                // let desc = '&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出读过的书</a>';
+                // console.log(desc);
+                // node = document.createElement(desc);
+                // typeElement.after(node);
+
+                // TODO 这的神奇，上面那样是不得行的 —— createElement 报 'invalid name'
+                typeElement.after('&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出读过的书</a>').after('&nbsp;·&nbsp;<a href="' + getExportLinkForUndoe(type, people) + '">导出想读的书</a>');
                 break;
             case MOVIE:
-                typeElement.after('&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出看过的片</a>');
+                typeElement.after('&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出看过的片</a>').after('&nbsp;·&nbsp;<a href="' + getExportLinkForUndoe(type, people) + '">导出想看的片</a>');
                 break;
             case MUSIC:
                 typeElement.after('&nbsp;·&nbsp;<a href="' + getExportLink(type, people) + '">导出听过的碟</a>');
