@@ -8,6 +8,8 @@
 // @match            https://movie.douban.com/people/*/collect*
 // @match            https://music.douban.com/people/*/collect*
 // @match            https://www.douban.com/location/people/*/drama/collect*
+// @match            https://book.douban.com/people/*/wish
+// @match            https://movie.douban.com/people/*/wish
 // @match            https://*.douban.com/people/*
 // @require          https://unpkg.com/dexie@latest/dist/dexie.js
 // @grant            none
@@ -22,6 +24,7 @@
     let people;
     const MOVIE = 'movie', BOOK = 'book', MUSIC = 'music', GAME = 'game', DRAMA = 'drama';
     const commonItem = "++id, cover, title, rating, rating_date, comment,";
+    let isWish;
 
     /* global $, Dexie */
 
@@ -129,6 +132,7 @@
             return;
         }
 
+        isWish = location.pathname.endsWith('wish');
         init(type);
     }
 
@@ -384,7 +388,7 @@
 
             JSonToCSV.setDataConver({
                 data: all,
-                fileName: 'db-' + type + '-' + new Date().toISOString().split('T')[0].replaceAll('-', ''),
+                fileName: 'db-' + type + '-' + (isWish ? 'wish-' : '') + new Date().toISOString().split('T')[0].replaceAll('-', ''),
                 columns: {title, key},
             });
             db.delete();
